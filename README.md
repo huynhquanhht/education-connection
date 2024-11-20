@@ -1,16 +1,15 @@
 # Education Connection Backend
 
-## Description
+## 1. Description
 This project, 'education-connection', is a backend service designed to help teachers perform administrative functions for their students. It's built using the NestJS framework, offering robust API endpoints for clients.
 
-## Features
+## 2. Features
 - Teacher can register students.
 - Teacher can retrieve a list of students common to a given list of teachers.
 - Teacher can suspend a specified student.
 - Teacher can retrieve a list of students who can receive a given notification.
 
-## Tech Stack
-
+## 3. Tech Stack
 This project is built using a robust tech stack for optimal performance and scalability:
 
 - **Backend Framework**: NestJS
@@ -18,10 +17,13 @@ This project is built using a robust tech stack for optimal performance and scal
 - **Testing**: Jest
 - **Code Formatting and Linting**: ESLint, Prettier
 
-### Prerequisites
+## 4. Server setup guide
+### 4.1. Prerequisites
 - Node.js v18.19.0
+- Docker
+- Postman
 
-## Installation
+### 4.2. Installation
 To install the project, follow these steps:
 
 ```bash
@@ -30,57 +32,76 @@ cd education-connection
 npm install
 ```
 
-## Environment Setup
+### 4.3. Environment setup
 
-To run this project, you will need to set up the following environment variables. You can do this by creating a `.env` (local).
-Let's create a new database and replace the values of environment variables.
+To run this project, you will need to set up the following environment variables. You can do this by creating a `.env` file in folder `education-connection`.
 ```plaintext
-# MySQL
 PORT=8080
-DB_HOST_MYSQL=127.0.0.1
+NODE_ENV=dev
+DB_ROOT_PASSWORD=Root@123
+DB_HOST_MYSQL=mysql-db
 DB_PORT_MYSQL=3306
 DB_USERNAME_MYSQL=admin
-DB_PASSWORD_MYSQL=admin@123
+DB_PASSWORD_MYSQL=Admin@123
 DB_NAME_MYSQL=education_connection
 DB_LOGGING=DISABLED
 ```
 
-## Database Migrations
+### 4.4. Run docker compose
+At folder `education-connection`, to build, start and run services:
+```bash
+docker-compose up
+```
+
+### 4.5. Seeding
+
+After the server is successfully up and running, you can proceed with running the seeding process.
+```
+docker exec -it education-connection-api npm run seed:run
+```
+
+### 4.6. Import Postman collection
+Import the content of [Postman File](./education-connection.postman_collection.json) to Postman following guide.
+![Import postman guide](./images/import-postman-guide.png)
+
+
+### 4.7. Call the first api
+Call the first api to get response.
+![Test the first api](./images/test-first-api.png)
+
+## 5. Other commands
+
+### 5.1. Database Migrations
 To run migrations:
 ```bash
 npm run migration:run
 ```
 
-## Seeding
+### 5.2. Seeding
 To run for seeding:
 ```bash
 npm run seed:run
 ```
-
-
-## Usage
-To start the application in development mode:
-
+### 5.3. Start application in development mode
 ```bash
 npm run start
 ```
-
-To build the application for production:
+### 5.4. Build application for production
 ```bash
 npm run build
 ```
 
-## Running Tests
+### 5.5. Run test
 To run tests:
 ```bash
 npm run test
 ```
 
-## Running and checking coverage
+### 5.6. Running and checking coverage
 ```bash
 npm run test:cov
 ```
 
-## Note
+## 6. Note
 - Following the requirement, I didn't create the API for registering a specific teacher or a specific student. Please run the seeding first to generate data. 
-- Attach the postman: [Postman File](./education-connection.postman_collection.json)
+- Attach the postman file: [Postman File](./education-connection.postman_collection.json)

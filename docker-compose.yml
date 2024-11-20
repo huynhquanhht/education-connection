@@ -4,14 +4,16 @@ services:
     container_name: mysql-db
     image: mysql:8.0.32
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME_MYSQL}
-      MYSQL_USER: ${DB_USERNAME_MYSQL}
-      MYSQL_PASSWORD: ${DB_PASSWORD_MYSQL}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
+    ports: 
+      - "${MYSQL_PORT_EXPOSE}:3306"
   nestjs-app:
     container_name: education-connection-api
     build: .
@@ -20,4 +22,4 @@ services:
       mysql-db:
         condition: service_healthy
     ports:
-      - 8080:8080
+      - "${SERVER_PORT}:${SERVER_PORT}"

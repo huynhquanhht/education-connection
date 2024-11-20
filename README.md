@@ -29,16 +29,23 @@ To install the project, follow these steps:
 ```bash
 git clone https://github.com/huynhquanhht/education-connection
 cd education-connection
-npm install
 ```
 
 ### 4.3. Environment setup
 
 To run this project, you will need to set up the following environment variables. You can do this by creating a `.env` file in folder `education-connection`.
 ```plaintext
-PORT=8080
-NODE_ENV=dev
-DB_ROOT_PASSWORD=Root@123
+# MySQL Database
+#===
+MYSQL_PORT_EXPOSE=3307
+MYSQL_ROOT_PASSWORD=Root@123
+MYSQL_USER=admin
+MYSQL_PASSWORD=Admin@123
+MYSQL_DATABASE=education_connection
+
+# Server
+#===
+SERVER_PORT=8080
 DB_HOST_MYSQL=mysql-db
 DB_PORT_MYSQL=3306
 DB_USERNAME_MYSQL=admin

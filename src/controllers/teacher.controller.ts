@@ -4,7 +4,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  ParseArrayPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -14,6 +13,7 @@ import { RetrieveNotificationsRequestDto } from '@/dtos/request/retrieve-notific
 import { SuspendStudentRequestDto } from '@/dtos/request/suspend-student-request.dto';
 import { GetCommonStudentsResponseDto } from '@/dtos/response/get-common-student-response.dto';
 import { RetrieveNotificationsResponseDto } from '@/dtos/response/retrieve-notifications-response.dto';
+import { GetCommonStudentsRequestDto } from '@/dtos/request/get-common-students-request.dto';
 
 @Controller('/api')
 export class TeacherController {
@@ -30,10 +30,9 @@ export class TeacherController {
   @Get('/commonstudents')
   @HttpCode(HttpStatus.OK)
   getCommonStudents(
-    @Query('teacher', new ParseArrayPipe({ items: String }))
-    teacherEmails: string[],
+    @Query() getCommonStudentsRequestDto: GetCommonStudentsRequestDto,
   ): Promise<GetCommonStudentsResponseDto> {
-    return this.teacherService.getCommonStudents([...teacherEmails]);
+    return this.teacherService.getCommonStudents(getCommonStudentsRequestDto);
   }
 
   @Post('/suspend')

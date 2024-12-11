@@ -2,8 +2,8 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsEmail,
-  IsNotEmpty,
-  IsString,
+  IsNotEmpty, IsNotEmptyObject,
+  IsString, ValidateIf,
 } from 'class-validator';
 
 export class RegisterStudentsRequestDto {
@@ -11,7 +11,8 @@ export class RegisterStudentsRequestDto {
   @IsString()
   @IsEmail()
   teacher: string;
-
+  
+  @IsNotEmpty()
   @IsArray()
   @ArrayNotEmpty()
   @IsEmail({}, { each: true })

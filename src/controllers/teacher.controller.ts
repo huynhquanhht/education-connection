@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -14,6 +14,7 @@ import { RetrieveNotificationsRequestDto } from '@/dtos/request/retrieve-notific
 import { SuspendStudentRequestDto } from '@/dtos/request/suspend-student-request.dto';
 import { GetCommonStudentsResponseDto } from '@/dtos/response/get-common-student-response.dto';
 import { RetrieveNotificationsResponseDto } from '@/dtos/response/retrieve-notifications-response.dto';
+import { DeleteStudentRequestDto } from '@/dtos/request/delete-student-request.dto';
 
 @Controller('/api')
 export class TeacherController {
@@ -52,5 +53,10 @@ export class TeacherController {
     return this.teacherService.retrieveForNotifications(
       retrieveNotificationsDto,
     );
+  }
+
+  @Delete('/student')
+  deleteStudent(@Body() deleteStudentDto: DeleteStudentRequestDto) {
+    return this.teacherService.deleteStudent(deleteStudentDto);
   }
 }

@@ -11,6 +11,7 @@ import { Student } from '@/entities/student.entity';
 import { TeacherStudent } from '@/entities/teacher-student.entity';
 import RequestUtils from '@/utils/request';
 import { RetrieveNotificationsResponseDto } from '@/dtos/response/retrieve-notifications-response.dto';
+import { DeleteStudentRequestDto } from '@/dtos/request/delete-student-request.dto';
 
 @Injectable()
 export class TeacherService {
@@ -130,6 +131,38 @@ export class TeacherService {
         mentionedStudents,
       );
       return { recipients: students?.map((student) => student.email) || [] };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteStudent(deleteStudentDto: DeleteStudentRequestDto): Promise<void> {
+    try {
+      const { studentEmail } = deleteStudentDto;
+      const student = await this.studentRepository.getByEmail(studentEmail);
+      if (!student) {
+        throw new HttpException(
+          'This student was not registered',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const teachersStudent = await this.teacherStudentRepository.find({
+        where: { studentId: student.id },
+      });
+      if (teachersStudent) {
+        await this.teacherStudentRepository
+          .createQueryBuilder()
+          .delete()
+          .where('student_id = :studentId', { studentId: student.id })
+          .execute();
+      }
+
+      await this.studentRepository
+        .createQueryBuilder()
+        .delete()
+        .where('id = :id', { id: student.id })
+        .execute();
     } catch (error) {
       throw error;
     }

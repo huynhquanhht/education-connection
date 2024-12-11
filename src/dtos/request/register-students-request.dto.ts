@@ -4,16 +4,20 @@ import {
   IsEmail,
   IsNotEmpty,
   IsString,
+  Validate,
 } from 'class-validator';
+import { IsUnique } from '@/pipes/unique-email.validator';
 
 export class RegisterStudentsRequestDto {
-  @IsNotEmpty()
-  @IsString()
   @IsEmail()
+  @IsString()
+  @IsNotEmpty()
   teacher: string;
 
-  @IsArray()
-  @ArrayNotEmpty()
+  @Validate(IsUnique)
   @IsEmail({}, { each: true })
+  @ArrayNotEmpty()
+  @IsArray()
+  @IsNotEmpty()
   students: string[];
 }

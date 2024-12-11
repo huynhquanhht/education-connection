@@ -10,6 +10,7 @@ export class IsUnique implements ValidatorConstraintInterface {
     values: Array<any>,
     validationArguments?: ValidationArguments,
   ): Promise<boolean> | boolean {
+    if (!Array.isArray(values)) return true;
     return values.length <= (new Set(values)).size;
   }
 

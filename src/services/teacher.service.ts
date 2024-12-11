@@ -11,6 +11,7 @@ import { Student } from '@/entities/student.entity';
 import { TeacherStudent } from '@/entities/teacher-student.entity';
 import RequestUtils from '@/utils/request';
 import { RetrieveNotificationsResponseDto } from '@/dtos/response/retrieve-notifications-response.dto';
+import { GetCommonStudentsRequestDto } from '@/dtos/request/get-common-students-request.dto';
 
 @Injectable()
 export class TeacherService {
@@ -62,9 +63,10 @@ export class TeacherService {
   }
 
   async getCommonStudents(
-    teacherEmails: string[],
+    getCommonStudentRequestDto: GetCommonStudentsRequestDto,
   ): Promise<GetCommonStudentsResponseDto> {
     try {
+      const { teacher: teacherEmails } = getCommonStudentRequestDto;
       // Check teacher exists
       let teachers: Teacher[] =
         await this.teacherRepository.getByEmails(teacherEmails);

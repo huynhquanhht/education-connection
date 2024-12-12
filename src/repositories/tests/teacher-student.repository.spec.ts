@@ -14,7 +14,6 @@ describe('TeacherStudentRepository', () => {
 	};
 
 	beforeEach(async () => {
-		// Mock the `createEntityManager` behavior to return repository functions
 		mockCreateEntityManager.mockReturnValue({
 			save: mockSave,
 			find: mockFind,
@@ -28,8 +27,6 @@ describe('TeacherStudentRepository', () => {
 		}).compile();
 
 		teacherStudentRepository = module.get<TeacherStudentRepository>(TeacherStudentRepository);
-
-
 	});
 
 	afterEach(() => {
@@ -41,5 +38,4 @@ describe('TeacherStudentRepository', () => {
 			expect(teacherStudentRepository).toBeDefined();
 		});
 	});
-
 });

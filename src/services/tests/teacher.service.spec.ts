@@ -5,11 +5,11 @@ import { StudentRepository } from '@/repositories/student.repository';
 import { TeacherStudentRepository } from '@/repositories/teacher-student.repository';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { RegisterStudentsRequestDto } from '@/dtos/request/register-students-request.dto';
-import { GetCommonStudentsResponseDto } from '@/dtos/response/get-common-student-response.dto';
 import { SuspendStudentRequestDto } from '@/dtos/request/suspend-student-request.dto';
 import { RetrieveNotificationsRequestDto } from '@/dtos/request/retrieve-notifications-request.dto';
 import { Teacher } from '@/entities/teacher.entity';
 import { Student } from '@/entities/student.entity';
+import { GetCommonStudentsRequestDto } from '@/dtos/request/get-common-students-request.dto';
 
 describe('TeacherService', () => {
   let teacherService: TeacherService;
@@ -56,10 +56,6 @@ describe('TeacherService', () => {
     );
   });
 
-  it('should be defined', () => {
-    expect(teacherService).toBeDefined();
-  });
-//
   describe('registerStudent', () => {
     it('should throw an error if the teacher does not exist', async () => {
       jest.spyOn(teacherRepository, 'getByEmail').mockResolvedValue(null);
@@ -75,7 +71,9 @@ describe('TeacherService', () => {
     });
 
     it('should throw an error if any student does not exist', async () => {
-      jest.spyOn(teacherRepository, 'getByEmail').mockResolvedValue({ id: 1 } as Teacher);
+      jest
+        .spyOn(teacherRepository, 'getByEmail')
+        .mockResolvedValue({ id: 1 } as Teacher);
       jest.spyOn(studentRepository, 'getByEmails').mockResolvedValue([]);
 
       const mockDto: RegisterStudentsRequestDto = {
@@ -92,8 +90,12 @@ describe('TeacherService', () => {
     });
 
     it('should save teacher-student associations when data is valid', async () => {
-      jest.spyOn(teacherRepository, 'getByEmail').mockResolvedValue({ id: 1 } as Teacher);
-      jest.spyOn(studentRepository, 'getByEmails').mockResolvedValue([{ id: 2 }] as Student[]);
+      jest
+        .spyOn(teacherRepository, 'getByEmail')
+        .mockResolvedValue({ id: 1 } as Teacher);
+      jest
+        .spyOn(studentRepository, 'getByEmails')
+        .mockResolvedValue([{ id: 2 }] as Student[]);
       jest.spyOn(teacherStudentRepository, 'save').mockResolvedValue(null);
 
       const mockDto: RegisterStudentsRequestDto = {
@@ -108,15 +110,17 @@ describe('TeacherService', () => {
       ]);
     });
   });
-//
+  //
   describe('getCommonStudents', () => {
     it('should throw an error if any teacher does not exist', async () => {
       jest.spyOn(teacherRepository, 'getByEmails').mockResolvedValue([]);
 
-      const teacherEmails = ['teacherken@gmail.com', 'teacherjoe@gmail.com'];
+      const getCommonStudentRequestDto = {
+        teacher: ['teacherken@gmail.com', 'teacherjoe@gmail.com'],
+      };
 
       await expect(
-        teacherService.getCommonStudents(teacherEmails),
+        teacherService.getCommonStudents(getCommonStudentRequestDto),
       ).rejects.toThrow(
         new HttpException(
           'There is teacher data that has not been created previously.',
@@ -126,25 +130,29 @@ describe('TeacherService', () => {
     });
 
     it('should return a list of common students', async () => {
-      jest.spyOn(teacherRepository, 'getByEmails').mockResolvedValue([
-        { id: 1 } ,
-        { id: 2 },
-      ]as Teacher[]) ;
-      jest.spyOn(studentRepository, 'getCommonStudents').mockResolvedValue([
-        { email: 'studentjon@gmail.com' },
-        { email: 'studentbob@gmail.com' },
-      ] as Student[]) ;
+      jest
+        .spyOn(teacherRepository, 'getByEmails')
+        .mockResolvedValue([{ id: 1 }, { id: 2 }] as Teacher[]);
+      jest
+        .spyOn(studentRepository, 'getCommonStudents')
+        .mockResolvedValue([
+          { email: 'studentjon@gmail.com' },
+          { email: 'studentbob@gmail.com' },
+        ] as Student[]);
 
-      const teacherEmails = ['teacherken@gmail.com', 'teacherjoe@gmail.com'];
+      const getCommonStudentDto: GetCommonStudentsRequestDto = {
+        teacher: ['teacherken@gmail.com', 'teacherjoe@gmail.com'],
+      };
 
-      const result = await teacherService.getCommonStudents(teacherEmails);
+      const result =
+        await teacherService.getCommonStudents(getCommonStudentDto);
 
       expect(result).toEqual({
         student: ['studentjon@gmail.com', 'studentbob@gmail.com'],
       });
     });
   });
-//
+  //
   describe('suspendStudent', () => {
     it('should throw an error if the student does not exist', async () => {
       jest.spyOn(studentRepository, 'getByEmail').mockResolvedValue(null);
@@ -159,8 +167,12 @@ describe('TeacherService', () => {
     });
 
     it('should suspend the student if they exist', async () => {
-      jest.spyOn(studentRepository, 'getByEmail').mockResolvedValue({ id: 1 }  as Student);
-      jest.spyOn(studentRepository, 'suspendStudent').mockResolvedValue(null as never);
+      jest
+        .spyOn(studentRepository, 'getByEmail')
+        .mockResolvedValue({ id: 1 } as Student);
+      jest
+        .spyOn(studentRepository, 'suspendStudent')
+        .mockResolvedValue(null as never);
 
       const mockDto: SuspendStudentRequestDto = {
         student: 'studentmary@gmail.com',
@@ -171,7 +183,7 @@ describe('TeacherService', () => {
       expect(studentRepository.suspendStudent).toHaveBeenCalledWith({ id: 1 });
     });
   });
-//
+  //
   describe('retrieveForNotifications', () => {
     it('should throw an error if the teacher does not exist', async () => {
       jest.spyOn(teacherRepository, 'findOne').mockResolvedValue(null);
@@ -189,13 +201,15 @@ describe('TeacherService', () => {
     });
 
     it('should return recipients for notifications', async () => {
-      jest.spyOn(teacherRepository, 'findOne').mockResolvedValue({ id: 1 } as Teacher);
-      jest.spyOn(studentRepository, 'retrieveForNotifications').mockResolvedValue(
-        [
-          { email: 'studentagnes@gmail.com' } ,
+      jest
+        .spyOn(teacherRepository, 'findOne')
+        .mockResolvedValue({ id: 1 } as Teacher);
+      jest
+        .spyOn(studentRepository, 'retrieveForNotifications')
+        .mockResolvedValue([
+          { email: 'studentagnes@gmail.com' },
           { email: 'studentmiche@gmail.com' },
-        ] as Student[]
-      );
+        ] as Student[]);
 
       const mockDto: RetrieveNotificationsRequestDto = {
         teacher: 'teacherken@gmail.com',
@@ -209,6 +223,4 @@ describe('TeacherService', () => {
       });
     });
   });
-
 });
-

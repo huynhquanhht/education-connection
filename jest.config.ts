@@ -5,14 +5,25 @@ const config: Config = {
   rootDir: 'src',
   testRegex: '.*\\.spec\\.ts$',
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest'
+    '^.+\\.(t|j)s$': 'ts-jest',
   },
-  collectCoverageFrom: ['**/*.(t|j)s'],
+  collectCoverageFrom: [
+    '**/*.(t|j)s',
+    '!**/main.ts',
+    '!**/app.module.ts',
+    '!**/config/*',
+    '!**/database/**/**/*',
+    '!**/filter/*',
+    '!**/pipes/*',
+    '!**/modules/*',
+    '!**/dtos/**/*',
+    '!**/entities/*',
+  ],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1'
-  }
+    '^@/(.*)$': '<rootDir>/$1',
+  },
 };
 
 export default config;

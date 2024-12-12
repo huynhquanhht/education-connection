@@ -8,9 +8,9 @@ describe('TeacherRepository', () => {
   let dataSource: DataSource;
 
   const mockFindOne = jest.fn();
-  const mockFind = jest.fn();
 
   const mockDataSource = {
+    createQueryBuilder: jest.fn(),
     createEntityManager: jest.fn(),
   };
 
@@ -35,13 +35,14 @@ describe('TeacherRepository', () => {
       const teacherEmail = 'teacher@example.com';
       const teacher: Teacher = { email: teacherEmail } as Teacher;
 
-      // Mock the return value of findOne
       mockFindOne.mockResolvedValue(teacher);
       teacherRepository.findOne = mockFindOne;
 
       const result = await teacherRepository.getByEmail(teacherEmail);
 
-      expect(mockFindOne).toHaveBeenCalledWith({ where: { email: teacherEmail } });
+      expect(mockFindOne).toHaveBeenCalledWith({
+        where: { email: teacherEmail },
+      });
       expect(result).toEqual(teacher);
     });
 
@@ -52,7 +53,9 @@ describe('TeacherRepository', () => {
       mockFindOne.mockResolvedValue(undefined);
       teacherRepository.findOne = mockFindOne;
 
-      await expect(teacherRepository.getByEmail(teacherEmail)).resolves.toBe(undefined);
+      await expect(teacherRepository.getByEmail(teacherEmail)).resolves.toBe(
+        undefined,
+      );
     });
   });
 
@@ -65,12 +68,13 @@ describe('TeacherRepository', () => {
       ];
 
       // Mock the return value of find
-      mockFind.mockResolvedValue(teachers);
-      teacherRepository.find = mockFind;
+      teacherRepository.find = jest.fn().mockResolvedValue(teachers);
 
       const result = await teacherRepository.getByEmails(teacherEmails);
 
-      expect(mockFind).toHaveBeenCalledWith({ where: { email: In(teacherEmails) } });
+      expect(teacherRepository.find).toHaveBeenCalledWith({
+        where: { email: In(teacherEmails) },
+      });
       expect(result).toEqual(teachers);
     });
 
@@ -78,12 +82,13 @@ describe('TeacherRepository', () => {
       const teacherEmails = ['teacher1@example.com', 'teacher2@example.com'];
 
       // Mock the return value of find to be an empty array
-      mockFind.mockResolvedValue([]);
-      teacherRepository.find = mockFind;
+      teacherRepository.find = jest.fn().mockResolvedValue([]);
 
       const result = await teacherRepository.getByEmails(teacherEmails);
 
-      expect(mockFind).toHaveBeenCalledWith({ where: { email: In(teacherEmails) } });
+      expect(teacherRepository.find).toHaveBeenCalledWith({
+        where: { email: In(teacherEmails) },
+      });
       expect(result).toEqual([]);
     });
   });

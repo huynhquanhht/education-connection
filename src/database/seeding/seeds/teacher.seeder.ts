@@ -3,6 +3,7 @@ import { Seeder, SeederFactory, SeederFactoryManager } from 'typeorm-extension';
 import { Teacher } from '@/entities/teacher.entity';
 
 export class TeacherSeeder implements Seeder {
+  track: true;
   public async run(
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,

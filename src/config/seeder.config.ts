@@ -6,7 +6,7 @@ const options: DataSourceOptions & SeederOptions = {
   ...(typeOrmConfig as DataSourceOptions),
   factories: ['src/database/seeding/factories/*.factory{.ts,.js}'],
   seeds: ['src/database/seeding/seeds/*.seeder{.ts,.js}'],
-  seedTracking: false,
+  seedTracking: true,
 };
 
 const dataSource = new DataSource(options);

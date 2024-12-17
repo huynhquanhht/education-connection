@@ -4,7 +4,6 @@ import { typeOrmConfig } from './database.config';
 
 const options: DataSourceOptions & SeederOptions = {
   ...(typeOrmConfig as DataSourceOptions),
-  factories: ['src/database/seeding/factories/*.factory{.ts,.js}'],
   seeds: ['src/database/seeding/seeds/*.seeder{.ts,.js}'],
   seedTracking: false,
 };

@@ -7,8 +7,6 @@ export class StudentSeeder implements Seeder {
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
   ): Promise<any> {
-    const placeFactory: SeederFactory<Student, unknown> =
-      factoryManager.get(Student);
 
     const studentRepository: Repository<Student> =
       dataSource.getRepository(Student);
@@ -20,12 +18,7 @@ export class StudentSeeder implements Seeder {
       { email: 'commonstudent2@gmail.com', isSuspended: false },
       { email: 'studentmary@gmail.com', isSuspended: false }
     ]
-    const studentData: Student[] = await Promise.all(
-      students
-        .map(async (student: Student) => {
-          return await placeFactory.make(student);
-        }),
-    );
-    await studentRepository.save(studentData);
+
+    await studentRepository.save(students);
   }
 }

@@ -7,4 +7,9 @@ export class Class {
 
   @Column({ name: 'name', type: 'varchar', unique: true })
   name: string;
+
+  constructor(id: number, name: string) {
+    this.id = id;
+    this.name = name;
+  }
 }

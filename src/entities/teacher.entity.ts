@@ -4,12 +4,23 @@ import { TeacherStudent } from './teacher-student.entity';
 
 @Entity('teachers')
 export class Teacher {
-	@PrimaryGeneratedColumn('increment', { name: 'id', type: 'int' })
-	id?: number;
+  @PrimaryGeneratedColumn('increment', { name: 'id', type: 'int' })
+  id?: number;
 
-	@Column('varchar', { name: 'email', nullable: false, length: 255, unique: true })
-	email: string;
+  @Column('varchar', {
+    name: 'email',
+    nullable: false,
+    length: 255,
+    unique: true,
+  })
+  email: string;
 
-	@OneToMany(() => TeacherStudent, (teacherStudent) => teacherStudent.teacher)
-	public students?: Student[];
+  @Column({ name: 'password', type: 'varchar', nullable: false })
+  password?: string;
+
+  @Column({ name: 'access_token', type: 'varchar', nullable: true })
+  token?: string;
+
+  @OneToMany(() => TeacherStudent, (teacherStudent) => teacherStudent.teacher)
+  public students?: Student[];
 }

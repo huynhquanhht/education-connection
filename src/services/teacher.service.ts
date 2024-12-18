@@ -12,6 +12,7 @@ import { TeacherStudent } from '@/entities/teacher-student.entity';
 import RequestUtils from '@/utils/request';
 import { RetrieveNotificationsResponseDto } from '@/dtos/response/retrieve-notifications-response.dto';
 import { GetCommonStudentsRequestDto } from '@/dtos/request/get-common-students-request.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class TeacherService {
@@ -135,5 +136,25 @@ export class TeacherService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async verifyTeacher(email: string, password: string): Promise<Teacher> {
+    const teacher: Teacher = await this.teacherRepository.getByEmail(email);
+    if (!teacher) {
+      throw new HttpException('Email is not existed!', HttpStatus.BAD_REQUEST);
+    }
+    const isValidPassword = await bcrypt.compare(password, teacher.password);
+    if (!isValidPassword) {
+      throw new HttpException('Password is not valid!', HttpStatus.BAD_REQUEST);
+    }
+    return teacher;
+  }
+
+  async getTeacherByEmail(email: string): Promise<Teacher> {
+    const existTeacher: Teacher = await this.teacherRepository.getByEmail(email);
+    if (!existTeacher) {
+      throw new HttpException('Teacher is not existed', HttpStatus.BAD_REQUEST);
+    }
+    return existTeacher;
   }
 }

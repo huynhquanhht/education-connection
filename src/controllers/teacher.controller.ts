@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TeacherService } from '@/services/teacher.service';
 import { RegisterStudentsRequestDto } from '@/dtos/request/register-students-request.dto';
@@ -14,6 +15,7 @@ import { SuspendStudentRequestDto } from '@/dtos/request/suspend-student-request
 import { GetCommonStudentsResponseDto } from '@/dtos/response/get-common-student-response.dto';
 import { RetrieveNotificationsResponseDto } from '@/dtos/response/retrieve-notifications-response.dto';
 import { GetCommonStudentsRequestDto } from '@/dtos/request/get-common-students-request.dto';
+import { JwtAuthGuard } from '@/guards/jwt-auth.guard';
 
 @Controller('/api')
 export class TeacherController {
@@ -27,6 +29,7 @@ export class TeacherController {
     await this.teacherService.registerStudent(registerStudentDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/commonstudents')
   @HttpCode(HttpStatus.OK)
   getCommonStudents(

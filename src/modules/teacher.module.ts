@@ -10,5 +10,6 @@ import { Teacher } from '@/entities/teacher.entity';
 @Module({
   controllers: [TeacherController],
   providers: [TeacherService, TeacherRepository, StudentRepository, TeacherStudentRepository],
+  exports: [TeacherService]
 })
 export class TeacherModule {}

@@ -9,9 +9,10 @@ import { TeacherStudentRepository } from '@/repositories/teacher-student.reposit
 import { Teacher } from '@/entities/teacher.entity';
 import { Student } from '@/entities/student.entity';
 import { TeacherStudent } from '@/entities/teacher-student.entity';
-import RequestUtils from '@/utils/request';
+import RequestUtils from '@/utils/regex.util';
 import { RetrieveNotificationsResponseDto } from '@/dtos/response/retrieve-notifications-response.dto';
 import { GetCommonStudentsRequestDto } from '@/dtos/request/get-common-students-request.dto';
+import { In } from 'typeorm';
 
 @Injectable()
 export class TeacherService {
@@ -24,116 +25,88 @@ export class TeacherService {
   async registerStudent(
     registerStudentDto: RegisterStudentsRequestDto,
   ): Promise<void> {
-    try {
-      // Check teacher exists
-      let existTeacher: Teacher = await this.teacherRepository.getByEmail(
-        registerStudentDto.teacher,
+    const { teacher: teacherEmail, students: studentEmails } =
+      registerStudentDto;
+    let existTeacher: Teacher = await this.teacherRepository.findOneBy({
+      email: teacherEmail,
+    });
+    if (!existTeacher) {
+      throw new HttpException(
+        'Teacher is not existed.',
+        HttpStatus.BAD_REQUEST,
       );
-      if (!existTeacher) {
-        throw new HttpException(
-          'Teacher is not existed.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      // Check students exist
-      let existStudents: Student[] = await this.studentRepository.getByEmails(
-        registerStudentDto.students,
-      );
-      if (existStudents.length != registerStudentDto.students.length) {
-        throw new HttpException(
-          'There is student data that has not been created previously.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      // Register student teacher
-      let newTeacherStudents: TeacherStudent[] = existStudents.map(
-        (student) => {
-          return {
-            teacher: existTeacher,
-            student: student,
-          };
-        },
-      );
-      await this.teacherStudentRepository.save(newTeacherStudents);
-    } catch (error) {
-      throw error;
     }
+    let existStudents: Student[] = await this.studentRepository.findBy({
+      email: In(studentEmails),
+    });
+    if (existStudents.length != studentEmails.length) {
+      throw new HttpException(
+        'Have student is not existed!',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    let newTeacherStudents: TeacherStudent[] = existStudents.map((student) => ({
+      teacher: existTeacher,
+      student: student,
+    }));
+    await this.teacherStudentRepository.save(newTeacherStudents);
   }
 
   async getCommonStudents(
     getCommonStudentRequestDto: GetCommonStudentsRequestDto,
   ): Promise<GetCommonStudentsResponseDto> {
-    try {
-      const { teacher: teacherEmails } = getCommonStudentRequestDto;
-      // Check teacher exists
-      let teachers: Teacher[] =
-        await this.teacherRepository.getByEmails(teacherEmails);
-      if (
-        !teachers ||
-        teachers.length == 0 ||
-        teachers.length != teacherEmails.length
-      ) {
-        throw new HttpException(
-          'There is teacher data that has not been created previously.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      // Get common students
-      let commonStudents: Student[] =
-        await this.studentRepository.getCommonStudents(teachers);
-      let result = commonStudents?.map((element) => element.email) || [];
-      return { student: result };
-    } catch (error) {
-      throw error;
+    const { teacher: teacherEmails } = getCommonStudentRequestDto;
+    let existTeachers: Teacher[] = await this.teacherRepository.findBy({
+      email: In(teacherEmails),
+    });
+    if (existTeachers?.length != teacherEmails.length) {
+      throw new HttpException(
+        'Have teacher is not existed!',
+        HttpStatus.BAD_REQUEST,
+      );
     }
+    let commonStudents: Student[] =
+      await this.studentRepository.getCommonStudents(existTeachers);
+
+    return { student: commonStudents?.map((element) => element.email) || [] };
   }
 
   async suspendStudent(
     suspendStudentDto: SuspendStudentRequestDto,
   ): Promise<void> {
-    try {
-      // Check student exists
-      let existStudent: Student = await this.studentRepository.getByEmail(
-        suspendStudentDto.student,
+    let existStudent: Student = await this.studentRepository.findOneBy({
+      email: suspendStudentDto.student,
+    });
+    if (!existStudent) {
+      throw new HttpException(
+        'Student is not existed!',
+        HttpStatus.BAD_REQUEST,
       );
-      if (!existStudent) {
-        throw new HttpException('No student found!', HttpStatus.NOT_FOUND);
-      }
-      // Suspend Student
-      await this.studentRepository.suspendStudent(existStudent);
-    } catch (error) {
-      throw error;
     }
+    existStudent.isSuspended = true;
+    await this.studentRepository.save(existStudent);
   }
 
   async retrieveForNotifications({
     teacher,
     notification,
   }: RetrieveNotificationsRequestDto): Promise<RetrieveNotificationsResponseDto> {
-    try {
-      // Check student exists
-      const existTeacher = await this.teacherRepository.findOne({
-        where: { email: teacher },
-      });
-      if (!existTeacher) {
-        throw new HttpException(
-          'Teacher is not existed.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      // Extract mentioned students
-      const mentionedStudents =
-        RequestUtils.extractMentionedStudents(notification);
-      // Retrieve for notifications
-      const students = await this.studentRepository.retrieveForNotifications(
-        existTeacher.id,
-        mentionedStudents,
+    const existTeacher = await this.teacherRepository.findOne({
+      where: { email: teacher },
+    });
+    if (!existTeacher) {
+      throw new HttpException(
+        'Teacher is not existed.',
+        HttpStatus.BAD_REQUEST,
       );
-      return { recipients: students?.map((student) => student.email) || [] };
-    } catch (error) {
-      throw error;
     }
+    const mentionedStudents =
+      RequestUtils.extractMentionedStudents(notification);
+    const students = await this.studentRepository.retrieveForNotifications(
+      existTeacher.id,
+      mentionedStudents,
+    );
+    return { recipients: students?.map((student) => student.email) || [] };
   }
 }

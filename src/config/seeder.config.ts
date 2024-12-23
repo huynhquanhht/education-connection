@@ -1,4 +1,4 @@
-import { DataSourceOptions, DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import { SeederOptions } from 'typeorm-extension';
 import { typeOrmConfig } from './database.config';
 

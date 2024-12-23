@@ -24,18 +24,15 @@ describe('TeacherService', () => {
         {
           provide: TeacherRepository,
           useValue: {
-            getByEmail: jest.fn(),
-            getByEmails: jest.fn(),
             findOne: jest.fn(),
           },
         },
         {
           provide: StudentRepository,
           useValue: {
-            getByEmails: jest.fn(),
+            findOneBy: jest.fn(),
+            findBy: jest.fn(),
             getCommonStudents: jest.fn(),
-            getByEmail: jest.fn(),
-            suspendStudent: jest.fn(),
             retrieveForNotifications: jest.fn(),
           },
         },
@@ -58,7 +55,7 @@ describe('TeacherService', () => {
 
   describe('registerStudent', () => {
     it('should throw an error if the teacher does not exist', async () => {
-      jest.spyOn(teacherRepository, 'getByEmail').mockResolvedValue(null);
+      teacherRepository.findOneBy = jest.fn().mockResolvedValue(null);
 
       const mockDto: RegisterStudentsRequestDto = {
         teacher: 'teacherken@gmail.com',
@@ -71,10 +68,10 @@ describe('TeacherService', () => {
     });
 
     it('should throw an error if any student does not exist', async () => {
-      jest
-        .spyOn(teacherRepository, 'getByEmail')
+      teacherRepository.findOneBy = jest
+        .fn()
         .mockResolvedValue({ id: 1 } as Teacher);
-      jest.spyOn(studentRepository, 'getByEmails').mockResolvedValue([]);
+      studentRepository.findBy = jest.fn().mockResolvedValue([]);
 
       const mockDto: RegisterStudentsRequestDto = {
         teacher: 'teacherken@gmail.com',
@@ -83,20 +80,20 @@ describe('TeacherService', () => {
 
       await expect(teacherService.registerStudent(mockDto)).rejects.toThrow(
         new HttpException(
-          'There is student data that has not been created previously.',
+          'Have student is not existed!',
           HttpStatus.BAD_REQUEST,
         ),
       );
     });
 
     it('should save teacher-student associations when data is valid', async () => {
-      jest
-        .spyOn(teacherRepository, 'getByEmail')
+      teacherRepository.findOneBy = jest
+        .fn()
         .mockResolvedValue({ id: 1 } as Teacher);
-      jest
-        .spyOn(studentRepository, 'getByEmails')
+      studentRepository.findBy = jest
+        .fn()
         .mockResolvedValue([{ id: 2 }] as Student[]);
-      jest.spyOn(teacherStudentRepository, 'save').mockResolvedValue(null);
+      teacherStudentRepository.save = jest.fn().mockResolvedValue(null);
 
       const mockDto: RegisterStudentsRequestDto = {
         teacher: 'teacherken@gmail.com',
@@ -113,7 +110,7 @@ describe('TeacherService', () => {
   //
   describe('getCommonStudents', () => {
     it('should throw an error if any teacher does not exist', async () => {
-      jest.spyOn(teacherRepository, 'getByEmails').mockResolvedValue([]);
+      teacherRepository.findBy = jest.fn().mockResolvedValue([]);
 
       const getCommonStudentRequestDto = {
         teacher: ['teacherken@gmail.com', 'teacherjoe@gmail.com'],
@@ -123,18 +120,18 @@ describe('TeacherService', () => {
         teacherService.getCommonStudents(getCommonStudentRequestDto),
       ).rejects.toThrow(
         new HttpException(
-          'There is teacher data that has not been created previously.',
+          'Have teacher is not existed!',
           HttpStatus.BAD_REQUEST,
         ),
       );
     });
 
     it('should return a list of common students', async () => {
-      jest
-        .spyOn(teacherRepository, 'getByEmails')
+      teacherRepository.findBy = jest
+        .fn()
         .mockResolvedValue([{ id: 1 }, { id: 2 }] as Teacher[]);
-      jest
-        .spyOn(studentRepository, 'getCommonStudents')
+      studentRepository.getCommonStudents = jest
+        .fn()
         .mockResolvedValue([
           { email: 'studentjon@gmail.com' },
           { email: 'studentbob@gmail.com' },
@@ -151,28 +148,44 @@ describe('TeacherService', () => {
         student: ['studentjon@gmail.com', 'studentbob@gmail.com'],
       });
     });
+
+    it('should return an empty list of common students', async () => {
+      teacherRepository.findBy = jest
+        .fn()
+        .mockResolvedValue([{ id: 1 }, { id: 2 }] as Teacher[]);
+      studentRepository.getCommonStudents = jest.fn().mockResolvedValue(null);
+
+      const getCommonStudentDto: GetCommonStudentsRequestDto = {
+        teacher: ['teacherken@gmail.com', 'teacherjoe@gmail.com'],
+      };
+
+      const result =
+        await teacherService.getCommonStudents(getCommonStudentDto);
+
+      expect(result).toEqual({ student: [] });
+    });
   });
   //
   describe('suspendStudent', () => {
     it('should throw an error if the student does not exist', async () => {
-      jest.spyOn(studentRepository, 'getByEmail').mockResolvedValue(null);
+      studentRepository.findOneBy = jest.fn().mockResolvedValue(null);
 
       const mockDto: SuspendStudentRequestDto = {
         student: 'studentmary@gmail.com',
       };
 
       await expect(teacherService.suspendStudent(mockDto)).rejects.toThrow(
-        new HttpException('No student found!', HttpStatus.NOT_FOUND),
+        new HttpException('Student is not existed!', HttpStatus.BAD_REQUEST),
       );
     });
 
     it('should suspend the student if they exist', async () => {
-      jest
-        .spyOn(studentRepository, 'getByEmail')
+      studentRepository.findOneBy = jest
+        .fn()
         .mockResolvedValue({ id: 1 } as Student);
-      jest
-        .spyOn(studentRepository, 'suspendStudent')
-        .mockResolvedValue(null as never);
+      studentRepository.save = jest
+        .fn()
+        .mockImplementation((student: Student) => student);
 
       const mockDto: SuspendStudentRequestDto = {
         student: 'studentmary@gmail.com',
@@ -180,13 +193,13 @@ describe('TeacherService', () => {
 
       await teacherService.suspendStudent(mockDto);
 
-      expect(studentRepository.suspendStudent).toHaveBeenCalledWith({ id: 1 });
+      expect(studentRepository.save).toHaveBeenCalled();
     });
   });
-  //
+
   describe('retrieveForNotifications', () => {
     it('should throw an error if the teacher does not exist', async () => {
-      jest.spyOn(teacherRepository, 'findOne').mockResolvedValue(null);
+      teacherRepository.findOne = jest.fn().mockResolvedValue(null);
 
       const mockDto: RetrieveNotificationsRequestDto = {
         teacher: 'teacherken@gmail.com',
@@ -201,11 +214,11 @@ describe('TeacherService', () => {
     });
 
     it('should return recipients for notifications', async () => {
-      jest
-        .spyOn(teacherRepository, 'findOne')
+      teacherRepository.findOne = jest
+        .fn()
         .mockResolvedValue({ id: 1 } as Teacher);
-      jest
-        .spyOn(studentRepository, 'retrieveForNotifications')
+      studentRepository.retrieveForNotifications = jest
+        .fn()
         .mockResolvedValue([
           { email: 'studentagnes@gmail.com' },
           { email: 'studentmiche@gmail.com' },
@@ -220,6 +233,26 @@ describe('TeacherService', () => {
 
       expect(result).toEqual({
         recipients: ['studentagnes@gmail.com', 'studentmiche@gmail.com'],
+      });
+    });
+
+    it('should return empty list of recipients for notifications', async () => {
+      teacherRepository.findOne = jest
+        .fn()
+        .mockResolvedValue({ id: 1 } as Teacher);
+      studentRepository.retrieveForNotifications = jest
+        .fn()
+        .mockResolvedValue(null);
+
+      const mockDto: RetrieveNotificationsRequestDto = {
+        teacher: 'teacherken@gmail.com',
+        notification: 'Hello',
+      };
+
+      const result = await teacherService.retrieveForNotifications(mockDto);
+
+      expect(result).toEqual({
+        recipients: [],
       });
     });
   });

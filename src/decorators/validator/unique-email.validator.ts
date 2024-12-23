@@ -11,10 +11,10 @@ export class IsUnique implements ValidatorConstraintInterface {
     validationArguments?: ValidationArguments,
   ): Promise<boolean> | boolean {
     if (!Array.isArray(values)) return true;
-    return values.length <= (new Set(values)).size;
+    return values.length <= new Set(values).size;
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return `${validationArguments.property} must not be unique.`
+    return `Item in ${validationArguments.property} must be unique.`;
   }
 }

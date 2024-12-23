@@ -1,4 +1,4 @@
-class RequestUtils {
+class RegexUtils {
   static EMAIL_EXTRACT_REGEX = /@([\w.]+@(\w+\.)+\w{2,4})\b(?![^])/gi;
 
   static extractMentionedStudents(notification: string): string[] {
@@ -6,9 +6,9 @@ class RequestUtils {
       return [''];
     }
     return Array.from(
-      notification.match(RequestUtils.EMAIL_EXTRACT_REGEX) ?? [''],
+      notification.match(RegexUtils.EMAIL_EXTRACT_REGEX) ?? [''],
     ).map((i) => i.slice(1));
   }
 }
 
-export default RequestUtils;
+export default RegexUtils;

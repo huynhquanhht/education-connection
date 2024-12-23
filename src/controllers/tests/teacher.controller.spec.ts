@@ -63,7 +63,7 @@ describe('TeacherController', () => {
     expect(teacherService.getCommonStudents).toHaveBeenCalledWith(mockDto);
     expect(result).toEqual(mockResponse);
   });
-  //
+
   it('should call suspendStudent in TeacherService with the correct data', async () => {
     const mockDto = { student: 'studentmary@gmail.com' };
     jest.spyOn(teacherService, 'suspendStudent').mockResolvedValue();
@@ -74,7 +74,7 @@ describe('TeacherController', () => {
 
     expect(teacherService.suspendStudent).toHaveBeenCalledWith(mockDto);
   });
-  //
+
   it('should call retrieveForNotifications in TeacherService with the correct data', async () => {
     const mockDto = {
       teacher: 'teacherken@gmail.com',

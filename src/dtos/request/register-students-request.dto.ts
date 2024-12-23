@@ -6,7 +6,7 @@ import {
   IsString,
   Validate,
 } from 'class-validator';
-import { IsUnique } from '@/pipes/unique-email.validator';
+import { IsUnique } from '@/decorators/validator/unique-email.validator';
 
 export class RegisterStudentsRequestDto {
   @IsEmail()

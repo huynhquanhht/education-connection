@@ -10,6 +10,7 @@ import { RetrieveNotificationsRequestDto } from '@/dtos/request/retrieve-notific
 import { Teacher } from '@/entities/teacher.entity';
 import { Student } from '@/entities/student.entity';
 import { GetCommonStudentsRequestDto } from '@/dtos/request/get-common-students-request.dto';
+import { Messages } from '@/constants/message';
 
 describe('TeacherService', () => {
   let teacherService: TeacherService;
@@ -63,7 +64,7 @@ describe('TeacherService', () => {
       };
 
       await expect(teacherService.registerStudent(mockDto)).rejects.toThrow(
-        new HttpException('Teacher is not existed.', HttpStatus.BAD_REQUEST),
+        new HttpException(Messages.TEACHER_NOT_EXIST, HttpStatus.BAD_REQUEST),
       );
     });
 
@@ -80,7 +81,7 @@ describe('TeacherService', () => {
 
       await expect(teacherService.registerStudent(mockDto)).rejects.toThrow(
         new HttpException(
-          'Have student is not existed!',
+          Messages.HAVE_STUDENT_NOT_EXIST,
           HttpStatus.BAD_REQUEST,
         ),
       );
@@ -120,7 +121,7 @@ describe('TeacherService', () => {
         teacherService.getCommonStudents(getCommonStudentRequestDto),
       ).rejects.toThrow(
         new HttpException(
-          'Have teacher is not existed!',
+          Messages.HAVE_TEACHER_NOT_EXIST,
           HttpStatus.BAD_REQUEST,
         ),
       );
@@ -175,7 +176,7 @@ describe('TeacherService', () => {
       };
 
       await expect(teacherService.suspendStudent(mockDto)).rejects.toThrow(
-        new HttpException('Student is not existed!', HttpStatus.BAD_REQUEST),
+        new HttpException(Messages.STUDENT_NOT_EXIST, HttpStatus.BAD_REQUEST),
       );
     });
 
@@ -209,7 +210,7 @@ describe('TeacherService', () => {
       await expect(
         teacherService.retrieveForNotifications(mockDto),
       ).rejects.toThrow(
-        new HttpException('Teacher is not existed.', HttpStatus.BAD_REQUEST),
+        new HttpException(Messages.TEACHER_NOT_EXIST, HttpStatus.BAD_REQUEST),
       );
     });
 
@@ -251,9 +252,7 @@ describe('TeacherService', () => {
 
       const result = await teacherService.retrieveForNotifications(mockDto);
 
-      expect(result).toEqual({
-        recipients: [],
-      });
+      expect(result).toEqual({ recipients: [] });
     });
   });
 });

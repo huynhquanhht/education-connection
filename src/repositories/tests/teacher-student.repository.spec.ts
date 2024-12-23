@@ -5,8 +5,6 @@ import { DataSource } from 'typeorm';
 describe('TeacherStudentRepository', () => {
 	let teacherStudentRepository: TeacherStudentRepository;
 
-	const mockSave = jest.fn();
-	const mockFind = jest.fn();
 	const mockCreateEntityManager = jest.fn();
 
 	const mockDataSource = {
@@ -15,8 +13,8 @@ describe('TeacherStudentRepository', () => {
 
 	beforeEach(async () => {
 		mockCreateEntityManager.mockReturnValue({
-			save: mockSave,
-			find: mockFind,
+			save: jest.fn(),
+			find: jest.fn(),
 			createQueryRunner: jest.fn().mockReturnValue({getMetadata: jest.fn()})
 		});
 		const module: TestingModule = await Test.createTestingModule({

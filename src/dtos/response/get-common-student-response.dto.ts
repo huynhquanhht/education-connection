@@ -1,3 +1,3 @@
 export class GetCommonStudentsResponseDto {
-  student: string[]
+  student: string[];
 }

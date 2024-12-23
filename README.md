@@ -1,29 +1,117 @@
 # Education Connection Backend
 
-## 1. Description
-This project, 'education-connection', is a backend service designed to help teachers perform administrative functions for their students. It's built using the NestJS framework, offering robust API endpoints for clients.
+## Overview
+Education connection is a backend service designed to help teachers perform administrative functions for their students. It's built using the NestJS framework, offering robust API endpoints for clients.
 
-## 2. Features
+## Table Of Content
+- [Overview](#overview)
+- [Table Of Content](#table-of-content)
+- [Approach](#approach)
+  - [Technologies](#technologies)
+  - [Generate source structure](#generate-source-structure)
+  - [Choose a development method](#choose-a-development-method)
+  - [Develop APIs and unit test](#develop-apis-and-unit-test)
+  - [More ideas](#more-ideas)
+- [Tech stacks](#tech-stacks)
+- [Source structure](#source-structure)
+- [Test coverage](#test-coverage)
+- [How to run](#how-to-run)
+  - [Pre-requisites](#pre-requisites)
+  - [Installation](#installation)
+  - [Environment setup](#environment-setup)
+  - [Run docker compose](#run-docker-compose)
+  - [Seeding](#seeding)
+- [Development](#development)
+- [Production](#production)
+- [How to test](#how-to-test)
+  - [Import Postman collection](#import-postman-collection)
+  - [Call the first api](#call-the-first-api)
+- [Note](#note)
+- [Contact](#contact)
+
+## Features
 - Teacher can register students.
 - Teacher can retrieve a list of students common to a given list of teachers.
 - Teacher can suspend a specified student.
 - Teacher can retrieve a list of students who can receive a given notification.
 
-## 3. Tech Stack
-This project is built using a robust tech stack for optimal performance and scalability:
+## Approach
+### Technologies
+- Choose a library or framework to develop APIs. 
+- There are many options for this such as ExpressJS, NestJS, etc.
 
+### Generate source structure
+- Depend on requirement or project scope, choose a template or structure for this project.
+- There are many options such as 3-layers architecture, module architecture, etc.
+
+### Choose a development method
+- Think about TDD (Test-driven development) or TLD (Test-Last development).
+
+### Develop APIs and unit test
+- Following the requirements, develop APIs to implement features.
+- Write unit test to verify apis.
+
+### More ideas
+- Implement security with authentication, authorization.
+- Tracing with log.
+- Deploy app.
+
+## Tech stacks
 - **Backend Framework**: NestJS
 - **Database**: MySQL with TypeORM
 - **Testing**: Jest
 - **Code Formatting and Linting**: ESLint, Prettier
 
-## 4. Server setup guide
-### 4.1. Prerequisites
+
+## Source structure
+```tree
+...
+├── src
+│   ├── config
+│   ├── constants
+│   ├── controllers
+│   │   ├── tests
+│   │   │   ├── teacher.controller.spec.ts
+│   │   ├── teacher.controller.ts
+│   ├── database
+│   │   ├── migrations
+│   │   ├── seeding
+│   ├── decorators
+│   │   ├── validator
+│   ├── dtos
+│   │   ├── request
+│   │   ├── response
+│   ├── entities
+│   │   ├── teacher.entity.ts
+│   ├── filters
+│   │   ├── http-exception.filter.ts
+│   ├── modules
+│   │   ├── teacher.module.ts
+│   ├── pipes
+│   │   ├── validation.pipe.ts
+│   ├── repositories
+│   │   ├── tests
+│   │   │   ├── teacher.repository.spec.ts
+│   │   ├── teacher.repository.ts
+│   ├── services
+│   │   ├── tests
+│   │   │   ├── teacher.service.ts
+│   ├── utils
+│   ├── app.module.ts
+│   ├── main.ts
+```
+
+## Test coverage
+![test-coverage](images/test-coverage.png)
+
+
+## How to run
+### Pre-requisites
 - Node.js v18.19.0
 - Docker
 - Postman
 
-### 4.2. Installation
+### Installation
 To install the project, follow these steps:
 
 ```bash
@@ -31,7 +119,7 @@ git clone https://github.com/huynhquanhht/education-connection
 cd education-connection
 ```
 
-### 4.3. Environment setup
+### Environment setup
 
 To run this project, you will need to set up the following environment variables. You can do this by creating a `.env` file in folder `education-connection`.
 ```plaintext
@@ -54,61 +142,66 @@ DB_NAME_MYSQL=education_connection
 DB_LOGGING=DISABLED
 ```
 
-### 4.4. Run docker compose
+### Run docker compose
 At folder `education-connection`, to build, start and run services:
 ```bash
 docker-compose up
 ```
 
-### 4.5. Seeding
+### Seeding
 
 After the server is successfully up and running, you can proceed with running the seeding process.
 ```
 docker exec -it education-connection-api npm run seed:run
 ```
 
-### 4.6. Import Postman collection
-Import the content of [Postman File](./education-connection.postman_collection.json) to Postman following guide.
-![Import postman guide](./images/import-postman-guide.png)
-
-
-### 4.7. Call the first api
-Call the first api to get response.
-![Test the first api](./images/test-first-api.png)
-
-## 5. Other commands
-
-### 5.1. Database Migrations
+## Development
+### Database Migrations
 To run migrations:
 ```bash
 npm run migration:run
 ```
 
-### 5.2. Seeding
+### Seeding
 To run for seeding:
 ```bash
 npm run seed:run
 ```
-### 5.3. Start application in development mode
+### Start application
 ```bash
 npm run start
 ```
-### 5.4. Build application for production
-```bash
-npm run build
-```
 
-### 5.5. Run test
+### Run test
 To run tests:
 ```bash
 npm run test
 ```
 
-### 5.6. Running and checking coverage
+### Running and checking coverage
 ```bash
 npm run test:cov
 ```
 
-## 6. Note
+## Production
+### Build application
+```bash
+npm run build
+```
+## How to test
+### Import Postman collection
+Import the content of [Postman File](./education-connection.postman_collection.json) to Postman following guide.
+![Import postman guide](./images/import-postman-guide.png)
+
+
+### Call the first api
+Call the first api to get response.
+![Test the first api](./images/test-first-api.png)
+
+## Note
 - Following the requirement, I didn't create the API for registering a specific teacher or a specific student. Please run the seeding first to generate data. 
 - Attach the postman file: [Postman File](./education-connection.postman_collection.json)
+
+## Contact
+- Email: huynhquanhht@gmail.com
+- Github: huynhquanhht

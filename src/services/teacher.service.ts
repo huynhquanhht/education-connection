@@ -13,6 +13,7 @@ import RequestUtils from '@/utils/regex.util';
 import { RetrieveNotificationsResponseDto } from '@/dtos/response/retrieve-notifications-response.dto';
 import { GetCommonStudentsRequestDto } from '@/dtos/request/get-common-students-request.dto';
 import { In } from 'typeorm';
+import { Messages } from '@/constants/message';
 
 @Injectable()
 export class TeacherService {
@@ -32,7 +33,7 @@ export class TeacherService {
     });
     if (!existTeacher) {
       throw new HttpException(
-        'Teacher is not existed.',
+        Messages.TEACHER_NOT_EXIST,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -41,7 +42,7 @@ export class TeacherService {
     });
     if (existStudents.length != studentEmails.length) {
       throw new HttpException(
-        'Have student is not existed!',
+        Messages.HAVE_STUDENT_NOT_EXIST,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -62,7 +63,7 @@ export class TeacherService {
     });
     if (existTeachers?.length != teacherEmails.length) {
       throw new HttpException(
-        'Have teacher is not existed!',
+        Messages.HAVE_TEACHER_NOT_EXIST,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -80,7 +81,7 @@ export class TeacherService {
     });
     if (!existStudent) {
       throw new HttpException(
-        'Student is not existed!',
+        Messages.STUDENT_NOT_EXIST,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -97,7 +98,7 @@ export class TeacherService {
     });
     if (!existTeacher) {
       throw new HttpException(
-        'Teacher is not existed.',
+        Messages.TEACHER_NOT_EXIST,
         HttpStatus.BAD_REQUEST,
       );
     }

@@ -202,6 +202,9 @@ Call the first api to get response.
 - Following the requirement, I didn't create the API for registering a specific teacher or a specific student. Please run the seeding first to generate data. 
 - Attach the postman file: [Postman File](./education-connection.postman_collection.json)
 
+## 📜 License
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
 ## Contact
 - Email: huynhquanhht@gmail.com
 - Github: huynhquanhht
